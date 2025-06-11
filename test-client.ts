@@ -1,21 +1,71 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { spawn } from "child_process";
+import { z } from "zod";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Get the current directory for resolving paths
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Define response schemas
+const ToolCallResponseSchema = z.object({
+  content: z.array(z.object({
+    type: z.string(),
+    text: z.string().optional()
+  }))
+});
+
+const ToolsListResponseSchema = z.object({
+  tools: z.array(z.object({
+    name: z.string(),
+    description: z.string().optional(),
+    inputSchema: z.object({}).optional()
+  }))
+});
 
 class SatimMCPTester {
   private client: Client;
   private transport: StdioClientTransport;
 
   constructor() {
-    // Spawn the MCP server process
-    const serverProcess = spawn("ts-node", ["satim-mcp-server.ts"], {
-      stdio: ["pipe", "pipe", "inherit"]
-    });
+    // Configure the MCP server parameters with proper path resolution
+    const isWindows = process.platform === "win32";
+    const nodeModulesPath = path.join(__dirname, "node_modules", ".bin");
+    
+    // Try different approaches to find ts-node
+    let command: string;
+    let args: string[];
+    
+    if (isWindows) {
+      // Option 1: Use npx (recommended)
+      command = "npx";
+      args = ["ts-node", "satim-mcp-server.ts"];
+      
+      // Option 2: Direct path to ts-node (uncomment if npx doesn't work)
+      // command = path.join(nodeModulesPath, "ts-node.cmd");
+      // args = ["satim-mcp-server.ts"];
+      
+      // Option 3: Use node directly with ts-node/register (uncomment if others fail)
+      // command = "node";
+      // args = ["--loader", "ts-node/esm", "satim-mcp-server.ts"];
+    } else {
+      // Unix-like systems
+      command = "npx";
+      args = ["ts-node", "satim-mcp-server.ts"];
+    }
 
-    this.transport = new StdioClientTransport(
-      serverProcess.stdin,
-      serverProcess.stdout
-    );
+    const serverParams = {
+      command: command,
+      args: args,
+      env: {
+        ...process.env,
+        // Add any additional environment variables here
+        NODE_ENV: "development"
+      }
+    };
+
+    this.transport = new StdioClientTransport(serverParams);
     
     this.client = new Client({
       name: "satim-test-client",
@@ -42,7 +92,7 @@ class SatimMCPTester {
             password: "test_password_123"
           }
         }
-      });
+      }, ToolCallResponseSchema);
       console.log("✅ Credentials configured:", result);
     } catch (error) {
       console.error("❌ Credentials failed:", error);
@@ -67,9 +117,9 @@ class SatimMCPTester {
             description: "Test order for MCP server"
           }
         }
-      });
+      }, ToolCallResponseSchema);
       console.log("✅ Order registered:", result);
-      return result.content[0].text ? JSON.parse(result.content[0].text) : null;
+      return result.content[0]?.text ? JSON.parse(result.content[0].text) : null;
     } catch (error) {
       console.error("❌ Order registration failed:", error);
       return null;
@@ -88,9 +138,9 @@ class SatimMCPTester {
             language: "FR"
           }
         }
-      });
+      }, ToolCallResponseSchema);
       console.log("✅ Order confirmed:", result);
-      return result.content[0].text ? JSON.parse(result.content[0].text) : null;
+      return result.content[0]?.text ? JSON.parse(result.content[0].text) : null;
     } catch (error) {
       console.error("❌ Order confirmation failed:", error);
       return null;
@@ -108,7 +158,7 @@ class SatimMCPTester {
             response: response
           }
         }
-      });
+      }, ToolCallResponseSchema);
       console.log("✅ Response validated:", result);
     } catch (error) {
       console.error("❌ Response validation failed:", error);
@@ -128,7 +178,7 @@ class SatimMCPTester {
             language: "FR"
           }
         }
-      });
+      }, ToolCallResponseSchema);
       console.log("✅ Refund processed:", result);
     } catch (error) {
       console.error("❌ Refund failed:", error);
@@ -141,7 +191,7 @@ class SatimMCPTester {
       const result = await this.client.request({
         method: "tools/list",
         params: {}
-      });
+      }, ToolsListResponseSchema);
       console.log("Available tools:", result.tools?.map(t => t.name));
     } catch (error) {
       console.error("❌ Failed to list tools:", error);
@@ -168,8 +218,19 @@ class SatimMCPTester {
       console.error("❌ Test suite failed:", error);
     }
   }
+
+  async disconnect() {
+    try {
+      await this.client.close();
+      console.log("Disconnected from SATIM MCP Server");
+    } catch (error) {
+      console.error("Error during disconnect:", error);
+    }
+  }
 }
 
 // Run the tests
 const tester = new SatimMCPTester();
-tester.runFullTest();
+tester.runFullTest()
+  .then(() => tester.disconnect())
+  .catch(console.error);

@@ -84,7 +84,7 @@ interface RefundResponse {
   errorMessage?: string;
 }
 
-class SatimPaymentGateway {
+export class SatimPaymentGateway {
   private baseUrl = "https://test.satim.dz/payment/rest";
   private credentials: SatimCredentials;
 
@@ -347,6 +347,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
+  // Add null check for args
+  if (!args) {
+    throw new McpError(ErrorCode.InvalidRequest, "Arguments are required");
+  }
+
   try {
     switch (name) {
       case "configure_credentials":
@@ -368,22 +373,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           throw new McpError(ErrorCode.InvalidRequest, "Credentials not configured. Use configure_credentials first.");
         }
 
+        const jsonParams: any = {
+          force_terminal_id: args.force_terminal_id as string,
+          udf1: args.udf1 as string,
+        };
+
+        // Add optional parameters only if they exist
+        if (args.udf2) jsonParams.udf2 = args.udf2 as string;
+        if (args.udf3) jsonParams.udf3 = args.udf3 as string;
+        if (args.udf4) jsonParams.udf4 = args.udf4 as string;
+        if (args.udf5) jsonParams.udf5 = args.udf5 as string;
+
         const registrationResponse = await satimGateway.registerOrder({
           orderNumber: args.orderNumber as string,
           amount: SatimPaymentGateway.convertAmountToCentimes(args.amountInDA as number),
-          currency: args.currency as string || "012",
+          currency: (args.currency as string) || "012",
           returnUrl: args.returnUrl as string,
           failUrl: args.failUrl as string,
           description: args.description as string,
           language: args.language as 'AR' | 'FR' | 'EN',
-          jsonParams: {
-            force_terminal_id: args.force_terminal_id as string,
-            udf1: args.udf1 as string,
-            ...(args.udf2 && { udf2: args.udf2 as string }),
-            ...(args.udf3 && { udf3: args.udf3 as string }),
-            ...(args.udf4 && { udf4: args.udf4 as string }),
-            ...(args.udf5 && { udf5: args.udf5 as string })
-          }
+          jsonParams
         });
 
         return {

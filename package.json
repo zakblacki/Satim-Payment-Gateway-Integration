@@ -2,23 +2,26 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "axios": "^1.9.0",
-    "typescript": "^5.8.3"
+    "zod": "^3.25.60"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.149",
+    "@types/express": "^5.0.3",
     "@types/node": "^24.0.0",
     "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
   },
   "name": "satim-payment-gateway-integration",
   "version": "1.0.0",
-  "description": "test",
+  "description": "SATIM Payment Gateway MCP Server",
   "main": "satim-mcp-server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/satim-mcp-server.js",
-    "dev": "ts-node satim-mcp-server.ts",
+    "start": "node satim-mcp-server.js",
+    "dev": "tsx satim-mcp-server.ts",
     "test": "ts-node test-client.ts"
-
   },
   "repository": {
     "type": "git",
@@ -27,7 +30,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/devqxi/Satim-Payment-Gateway-Integration/issues"
   },
