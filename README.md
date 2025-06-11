@@ -67,39 +67,6 @@ npm install @modelcontextprotocol/sdk axios
 npm install --save-dev typescript @types/node tsx
 ```
 
-5. **Create TypeScript configuration:**
-
-Create `tsconfig.json`:
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "allowJs": true,
-    "outDir": "./dist",
-    "rootDir": "./",
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true
-  },
-  "include": [
-    "*.ts",
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
-}
-```
-
 ### Running the Server
 
 #### Option 1: Direct execution with tsx (Recommended for development)
