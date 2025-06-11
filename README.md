@@ -1,8 +1,9 @@
 # Satim Payment Gateway Integration
 
-A Model Context Protocol (MCP) server for interacting with the Razorpay payment gateway API. This package enables AI assistants like Cursor, Claude, and Copilot to directly access your Razorpay account data through a standardized interface.
-
 A Model Context Protocol (MCP) server for integrating with the SATIM payment gateway system in Algeria. The server provides a structured interface for processing CIB/Edhahabia card payments through the SATIM-IPAY platform. This package enables AI assistants like Cursor, Claude, and Copilot to directly access your Razorpay account data through a standardized interface.
+
+More details : 
+https://code2tutorial.com/tutorial/6b3a062c-3a34-4716-830e-8793a5378bcc/index.md
 
 ## Quick Start
 
