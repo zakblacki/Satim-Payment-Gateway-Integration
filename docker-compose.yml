@@ -1,0 +1,13 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  satim-mcp:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - SATIM_USERNAME=${SATIM_USERNAME}
+      - SATIM_PASSWORD=${SATIM_PASSWORD}
+      - NODE_ENV=production
+    volumes:
+      - ./logs:/app/logs

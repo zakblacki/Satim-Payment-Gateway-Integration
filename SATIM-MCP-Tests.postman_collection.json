@@ -1,0 +1,32 @@
+{
+  "info": {
+    "name": "SATIM MCP Server Tests",
+    "description": "Test collection for SATIM payment gateway MCP server"
+  },
+  "item": [
+    {
+      "name": "Configure Credentials",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"userName\": \"test_merchant\", \"password\": \"test_password\"}"
+        },
+        "url": "http://localhost:3000/api/satim/configure"
+      }
+    },
+    {
+      "name": "Register Order",
+      "request": {
+        "method": "POST",
+        "header": [{"key": "Content-Type", "value": "application/json"}],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderNumber\": \"TEST_{{$timestamp}}\",\n  \"amountInDA\": 150.75,\n  \"returnUrl\": \"https://example.com/success\",\n  \"failUrl\": \"https://example.com/failure\",\n  \"force_terminal_id\": \"E005005097\",\n  \"udf1\": \"test_reference\",\n  \"language\": \"FR\",\n  \"description\": \"Test order from Postman\"\n}"
+        },
+        "url": "http://localhost:3000/api/satim/register"
+      }
+    }
+  ]
+}

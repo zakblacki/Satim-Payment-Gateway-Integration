@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATIM MCP Server Tester</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2a5298;
+        }
+
+        .section h2 {
+            color: #1e3c72;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(42, 82, 152, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .response {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .response.success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .response.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-connected {
+            background: #28a745;
+        }
+
+        .status-disconnected {
+            background: #dc3545;
+        }
+
+        .status-pending {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #2a5298;
+            border-bottom-color: #2a5298;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .grid, .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo::before {
+            content: "💳";
+            font-size: 2rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <h1>SATIM MCP Server Tester</h1>
+            </div>
+            <p>Test and interact with the SATIM Payment Gateway MCP Server</p>
+            <div style="margin-top: 15px;">
+                <span class="status-indicator" id="connectionStatus"></span>
+                <span id="connectionText">Ready to Connect</span>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="alert alert-info">
+                <strong>ℹ️ Instructions:</strong> This interface simulates API calls to a SATIM MCP server. In production, these would connect to your actual MCP server running on localhost:3000 or your deployed endpoint.
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('credentials')">🔐 Credentials</button>
+                <button class="tab" onclick="switchTab('register')">📝 Register Order</button>
+                <button class="tab" onclick="switchTab('confirm')">✅ Confirm Order</button>
+                <button class="tab" onclick="switchTab('refund')">💰 Refund</button>
+                <button class="tab" onclick="switchTab('validate')">🔍 Validate</button>
+            </div>
+
+            <!-- Credentials Tab -->
+            <div id="credentials" class="tab-content active">
+                <div class="section">
+                    <h2>Configure SATIM Credentials</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userName">Merchant Username</label>
+                            <input type="text" id="userName" placeholder="Enter your SATIM username" value="test_merchant">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Merchant Password</label>
+                            <input type="password" id="password" placeholder="Enter your SATIM password" value="test_password">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="configureCredentials()">
+                        🔐 Configure Credentials
+                    </button>
+                    <div id="credentialsResponse" class="response" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Register Order Tab -->
+            <div id="register" class="tab-content">
+                <div class="section">
+                    <h2>Register New Order</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orderNumber">Order Number</label>
+                            <input type="text" id="orderNumber" placeholder="Unique order identifier">
+                        </div>
+                        <div class="form-group">
+                            <label for="amountInDA">Amount (DA)</label>
+                            <input type="number" id="amountInDA" placeholder="150.75" min="50" step="0.01" value="150.75">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="returnUrl">Return URL</label>
+                            <input type="url" id="returnUrl" placeholder="https://yoursite.com/success" value="https://example.com/success">
+                        </div>
+                        <div class="form-group">
+                            <label for="failUrl">Fail URL</label>
+                            <input type="url" id="failUrl" placeholder="https://yoursite.com/failure" value="https://example.com/failure">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="terminalId">Terminal ID</label>
+                            <input type="text" id="terminalId" placeholder="E005005097" value="E005005097">
+                        </div>
+                        <div class="form-group">
+                            <label for="udf1">UDF1 (Reference)</label>
+                            <input type="text" id="udf1" placeholder="merchant_ref_123" value="test_ref_123">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language">
+                                <option value="FR">French</option>
+                                <option value="AR">Arabic</option>
+                                <option value="EN">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" id="description" placeholder="Order description" value="Test order from web interface">
+                        </div>
+                    </div>
+                    <button class="btn" onclick="registerOrder()">
+                        📝 Register Order
+                    </button>
+                    <button class="btn btn-secondary" onclick="generateOrderNumber()">
+                        🎲 Generate Order Number
+                    </button>
+                    <div id="registerResponse" class="response" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Confirm Order Tab -->
+            <div id="confirm" class="tab-content">
+                <div class="section">
+                    <h2>Confirm Order Status</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="confirmOrderId">Order ID</label>
+                            <input type="text" id="confirmOrderId" placeholder="Order ID from registration">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmLanguage">Language</label>
+                            <select id="confirmLanguage">
+                                <option value="FR">French</option>
+                                <option value="AR">Arabic</option>
+                                <option value="EN">English</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="confirmOrder()">
+                        ✅ Confirm Order
+                    </button>
+                    <div id="confirmResponse" class="response" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Refund Tab -->
+            <div id="refund" class="tab-content">
+                <div class="section">
+                    <h2>Process Refund</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="refundOrderId">Order ID</label>
+                            <input type="text" id="refundOrderId" placeholder="Order ID to refund">
+                        </div>
+                        <div class="form-group">
+                            <label for="refundAmount">Refund Amount (DA)</label>
+                            <input type="number" id="refundAmount" placeholder="50.00" min="0.01" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="refundLanguage">Language</label>
+                            <select id="refundLanguage">
+                                <option value="FR">French</option>
+                                <option value="AR">Arabic</option>
+                                <option value="EN">English</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency">
+                                <option value="012">DZD (Algerian Dinar)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-danger" onclick="processRefund()">
+                        💰 Process Refund
+                    </button>
+                    <div id="refundResponse" class="response" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- Validate Tab -->
+            <div id="validate" class="tab-content">
+                <div class="section">
+                    <h2>Validate Payment Response</h2>
+                    <div class="form-group">
+                        <label for="validationResponse">Payment Response (JSON)</label>
+                        <textarea id="validationResponse" rows="10" placeholder="Paste the order confirmation response JSON here..."></textarea>
+                    </div>
+                    <button class="btn" onclick="validateResponse()">
+                        🔍 Validate Response
+                    </button>
+                    <button class="btn btn-secondary" onclick="loadSampleResponse()">
+                        📋 Load Sample Response
+                    </button>
+                    <div id="validateResponseResult" class="response" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Connection Settings</h2>
+                <div class="alert alert-warning">
+                    <strong>⚠️ Note:</strong> This is a demo interface. To test with a real MCP server, you need to:
+                    <ol style="margin-top: 10px; margin-left: 20px;">
+                        <li>Set up the MCP server as shown in the documentation</li>
+                        <li>Run the HTTP wrapper on localhost:3000</li>
+                        <li>Update the API endpoint below</li>
+                    </ol>
+                </div>
+                <div class="form-group">
+                    <label for="apiEndpoint">API Endpoint</label>
+                    <input type="url" id="apiEndpoint" value="http://localhost:3000/api/satim" placeholder="http://localhost:3000/api/satim">
+                </div>
+                <button class="btn btn-secondary" onclick="testConnection()">
+                    🔌 Test Connection
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let lastOrderId = null;
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            generateOrderNumber();
+            updateConnectionStatus('disconnected');
+        });
+
+        // Tab switching function
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Update connection status
+        function updateConnectionStatus(status) {
+            const indicator = document.getElementById('connectionStatus');
+            const text = document.getElementById('connectionText');
+            
+            indicator.className = 'status-indicator status-' + status;
+            
+            switch(status) {
+                case 'connected':
+                    text.textContent = 'Connected to MCP Server';
+                    break;
+                case 'pending':
+                    text.textContent = 'Connecting...';
+                    break;
+                case 'disconnected':
+                default:
+                    text.textContent = 'Not Connected';
+                    break;
+            }
+        }
+
+        // Generate unique order number
+        function generateOrderNumber() {
+            const timestamp = Date.now();
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            const orderNumber = `ORDER_${timestamp}_${random}`;
+            document.getElementById('orderNumber').value = orderNumber;
+        }
+
+        // Show response in appropriate container
+        function showResponse(containerId, data, isSuccess = true) {
+            const container = document.getElementById(containerId);
+            container.style.display = 'block';
+            container.className = `response ${isSuccess ? 'success' : 'error'}`;
+            container.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        }
+
+        // Simulate API call (since we don't have a real server running)
+        async function simulateApiCall(endpoint, data) {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+            
+            // Simulate different responses based on endpoint
+            switch(endpoint) {
+                case '/configure':
+                    return {
+                        success: true,
+                        message: 'Credentials configured successfully',
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                case '/register':
+                    const orderId = 'ORDER_' + Math.random().toString(36).substr(2, 15).toUpperCase();
+                    lastOrderId = orderId;
+                    // Auto-fill confirm tab
+                    document.getElementById('confirmOrderId').value = orderId;
+                    document.getElementById('refundOrderId').value = orderId;
+                    
+                    return {
+                        orderId: orderId,
+                        formUrl: `https://test.satim.dz/payment/merchants/test_merchant/payment_fr.html?mdOrder=${orderId}`,
+                        orderNumber: data.orderNumber,
+                        amount: Math.round(data.amountInDA * 100),
+                        currency: '012'
+                    };
+                    
+                case '/confirm':
+                    const isAccepted = Math.random() > 0.3; // 70% success rate
+                    return {
+                        orderNumber: 'ORDER_' + Date.now(),
+                        actionCode: isAccepted ? 0 : 1,
+                        actionCodeDescription: isAccepted ? 'Votre paiement a été accepté' : 'Transaction refusée',
+                        amount: 15075,
+                        errorCode: isAccepted ? '0' : '116',
+                        orderStatus: isAccepted ? 2 : 0,
+                        approvalCode: isAccepted ? '303004' : null,
+                        params: {
+                            respCode: isAccepted ? '00' : '05',
+                            respCode_desc: isAccepted ? 'Votre paiement a été accepté' : 'Transaction refusée par la banque'
+                        }
+                    };
+                    
+                case '/refund':
+                    return {
+                        errorCode: 0,
+                        message: 'Refund processed successfully',
+                        refundAmount: data.amountInDA,
+                        orderId: data.orderId
+                    };
+                    
+                case '/validate':
+                    const response = typeof data.response === 'string' ? JSON.parse(data.response) : data.response;
+                    const status = response.actionCode === 0 ? 'ACCEPTED' : 
+                                  response.actionCode === 1 ? 'REJECTED' : 'ERROR';
+                    
+                    return {
+                        status: status,
+                        displayMessage: response.actionCodeDescription || response.params?.respCode_desc,
+                        shouldShowContactInfo: status !== 'ACCEPTED',
+                        contactNumber: '3020 3020',
+                        details: {
+                            orderStatus: response.orderStatus,
+                            approvalCode: response.approvalCode,
+                            errorCode: response.errorCode
+                        }
+                    };
+                    
+                default:
+                    throw new Error('Unknown endpoint');
+            }
+        }
+
+        // Configure credentials
+        async function configureCredentials() {
+            const userName = document.getElementById('userName').value;
+            const password = document.getElementById('password').value;
+
+            if (!userName || !password) {
+                showResponse('credentialsResponse', 'Please enter both username and password', false);
+                return;
+            }
+
+            try {
+                updateConnectionStatus('pending');
+                const response = await simulateApiCall('/configure', { userName, password });
+                updateConnectionStatus('connected');
+                showResponse('credentialsResponse', response, true);
+            } catch (error) {
+                updateConnectionStatus('disconnected');
+                showResponse('credentialsResponse', 'Error: ' + error.message, false);
+            }
+        }
+
+        // Register order
+        async function registerOrder() {
+            const orderData = {
+                orderNumber: document.getElementById('orderNumber').value,
+                amountInDA: parseFloat(document.getElementById('amountInDA').value),
+                returnUrl: document.getElementById('returnUrl').value,
+                failUrl: document.getElementById('failUrl').value,
+                force_terminal_id: document.getElementById('terminalId').value,
+                udf1: document.getElementById('udf1').value,
+                language: document.getElementById('language').value,
+                description: document.getElementById('description').value
+            };
+
+            // Validation
+            if (!orderData.orderNumber || !orderData.amountInDA || orderData.amountInDA < 50) {
+                showResponse('registerResponse', 'Please fill required fields. Amount must be at least 50 DA.', false);
+                return;
+            }
+
+            try {
+                const response = await simulateApiCall('/register', orderData);
+                showResponse('registerResponse', response, true);
+            } catch (error) {
+                showResponse('registerResponse', 'Error: ' + error.message, false);
+            }
+        }
+
+        // Confirm order
+        async function confirmOrder() {
+            const orderId = document.getElementById('confirmOrderId').value;
+            const language = document.getElementById('confirmLanguage').value;
+
+            if (!orderId) {
+                showResponse('confirmResponse', 'Please enter an Order ID', false);
+                return;
+            }
+
+            try {
+                const response = await simulateApiCall('/confirm', { orderId, language });
+                showResponse('confirmResponse', response, true);
+                
+                // Auto-fill validation tab
+                document.getElementById('validationResponse').value = JSON.stringify(response, null, 2);
+            } catch (error) {
+                showResponse('confirmResponse', 'Error: ' + error.message, false);
+            }
+        }
+
+        // Process refund
+        async function processRefund() {
+            const refundData = {
+                orderId: document.getElementById('refundOrderId').value,
+                amountInDA: parseFloat(document.getElementById('refundAmount').value),
+                language: document.getElementById('refundLanguage').value,
+                currency: document.getElementById('currency').value
+            };
+
+            if (!refundData.orderId || !refundData.amountInDA) {
+                showResponse('refundResponse', 'Please enter Order ID and refund amount', false);
+                return;
+            }
+
+            try {
+                const response = await simulateApiCall('/refund', refundData);
+                showResponse('refundResponse', response, true);
+            } catch (error) {
+                showResponse('refundResponse', 'Error: ' + error.message, false);
+            }
+        }
+
+        // Validate response
+        async function validateResponse() {
+            const responseText = document.getElementById('validationResponse').value;
+
+            if (!responseText) {
+                showResponse('validateResponseResult', 'Please enter a payment response to validate', false);
+                return;
+            }
+
+            try {
+                const response = await simulateApiCall('/validate', { response: responseText });
+                showResponse('validateResponseResult', response, true);
+            } catch (error) {
+                showResponse('validateResponseResult', 'Error: ' + error.message, false);
+            }
+        }
+
+        // Generate dynamic sample responses
+        function generateSampleData() {
+            const timestamp = Date.now();
+            const isSuccess = Math.random() > 0.3; // 70% success rate
+            const orderNumber = `ORDER_${timestamp}_${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
+            const amount = Math.floor(Math.random() * 50000) + 5000; // Random amount between 50.00 and 500.00 DA
+            const approvalCode = Math.floor(Math.random() * 900000) + 100000; // 6-digit approval code
+            
+            // Array of possible response messages
+            const successMessages = [
+                'Votre paiement a été accepté',
+                'Transaction approuvée avec succès',
+                'Paiement effectué avec succès',
+                'Votre transaction a été validée'
+            ];
+            
+            const errorMessages = [
+                'Transaction refusée',
+                'Paiement non autorisé',
+                'Carte expirée',
+                'Fonds insuffisants',
+                'Transaction annulée',
+                'Erreur de saisie'
+            ];
+            
+            const errorCodes = ['116', '105', '101', '102', '103', '104'];
+            const respCodes = ['00', '05', '14', '51', '54', '96'];
+            
+            const selectedSuccessMessage = successMessages[Math.floor(Math.random() * successMessages.length)];
+            const selectedErrorMessage = errorMessages[Math.floor(Math.random() * errorMessages.length)];
+            const selectedErrorCode = errorCodes[Math.floor(Math.random() * errorCodes.length)];
+            const selectedRespCode = respCodes[Math.floor(Math.random() * respCodes.length)];
+            
+            return {
+                orderNumber: orderNumber,
+                actionCode: isSuccess ? 0 : 1,
+                actionCodeDescription: isSuccess ? selectedSuccessMessage : selectedErrorMessage,
+                amount: amount,
+                errorCode: isSuccess ? '0' : selectedErrorCode,
+                orderStatus: isSuccess ? 2 : 0,
+                approvalCode: isSuccess ? approvalCode.toString() : null,
+                timestamp: new Date().toISOString(),
+                params: {
+                    respCode: isSuccess ? '00' : selectedRespCode,
+                    respCode_desc: isSuccess ? selectedSuccessMessage : selectedErrorMessage,
+                    cardNumber: `****-****-****-${Math.floor(Math.random() * 9000) + 1000}`,
+                    merchantId: `MERCHANT_${Math.floor(Math.random() * 900) + 100}`,
+                    terminalId: `E${Math.floor(Math.random() * 900000) + 100000}`
+                }
+            };
+        }
+
+        // Load sample response - now generates new data each time
+        function loadSampleResponse() {
+            const sampleResponse = generateSampleData();
+            document.getElementById('validationResponse').value = JSON.stringify(sampleResponse, null, 2);
+        }
+
+        // Test connection
+        async function testConnection() {
+            const endpoint = document.getElementById('apiEndpoint').value;
+            
+            try {
+                updateConnectionStatus('pending');
+                // In a real implementation, this would test the actual endpoint
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Simulate connection success/failure
+                const success = Math.random() > 0.5;
+                if (success) {
+                    updateConnectionStatus('connected');
+                    alert('✅ Connection successful!');
+                } else {
+                    updateConnectionStatus('disconnected');
+                    alert('❌ Connection failed. Make sure your MCP server is running.');
+                }
+            } catch (error) {
+                updateConnectionStatus('disconnected');
+                alert('❌ Connection error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
