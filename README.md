@@ -18,6 +18,8 @@ npm install --save-dev typescript @types/node tsx
 
 # Run the server
 npx tsx satim-mcp-server.ts
+or
+npm run dev
 
 # Demo 
 Launch index.html
