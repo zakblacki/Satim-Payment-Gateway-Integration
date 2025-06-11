@@ -100,18 +100,6 @@ Create `tsconfig.json`:
 }
 ```
 
-6. **Update package.json scripts:**
-```json
-{
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/satim-mcp-server.js",
-    "dev": "tsx satim-mcp-server.ts",
-    "test": "tsx test-client.ts"
-  }
-}
-```
-
 ### Running the Server
 
 #### Option 1: Direct execution with tsx (Recommended for development)
