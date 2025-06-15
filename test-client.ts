@@ -29,41 +29,42 @@ class SatimMCPTester {
   private transport: StdioClientTransport;
 
   constructor() {
-    // Configure the MCP server parameters with proper path resolution
-    const isWindows = process.platform === "win32";
-    const nodeModulesPath = path.join(__dirname, "node_modules", ".bin");
+    // Check if we're running in development or production mode
+    const isDev = process.env.NODE_ENV === 'development';
     
-    // Try different approaches to find ts-node
-    let command: string;
-    let args: string[];
+    let serverParams;
     
-    if (isWindows) {
-      // Option 1: Use npx (recommended)
-      command = "npx";
-      args = ["ts-node", "satim-mcp-server.ts"];
-      
-      // Option 2: Direct path to ts-node (uncomment if npx doesn't work)
-      // command = path.join(nodeModulesPath, "ts-node.cmd");
-      // args = ["satim-mcp-server.ts"];
-      
-      // Option 3: Use node directly with ts-node/register (uncomment if others fail)
-      // command = "node";
-      // args = ["--loader", "ts-node/esm", "satim-mcp-server.ts"];
+    if (isDev) {
+      // Development mode: use tsx
+      serverParams = {
+        command: "npx",
+        args: ["tsx", "satim-mcp-server.ts"],
+        env: {
+          ...process.env,
+          NODE_ENV: "development"
+        }
+      };
     } else {
-      // Unix-like systems
-      command = "npx";
-      args = ["ts-node", "satim-mcp-server.ts"];
-    }
-
-    const serverParams = {
-      command: command,
-      args: args,
-      env: {
-        ...process.env,
-        // Add any additional environment variables here
-        NODE_ENV: "development"
+      // Production mode: use compiled JS
+      // Fix: Check if we're already in dist directory
+      let serverPath;
+      if (__dirname.endsWith('dist')) {
+        // We're running from dist, so the server is in the same directory
+        serverPath = path.resolve(__dirname, 'satim-mcp-server.js');
+      } else {
+        // We're running from project root, so server is in dist/
+        serverPath = path.resolve(__dirname, 'dist', 'satim-mcp-server.js');
       }
-    };
+      
+      serverParams = {
+        command: "node",
+        args: [serverPath],
+        env: {
+          ...process.env,
+          NODE_ENV: "production"
+        }
+      };
+    }
 
     this.transport = new StdioClientTransport(serverParams);
     

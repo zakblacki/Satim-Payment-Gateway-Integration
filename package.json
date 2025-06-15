@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
     "axios": "^1.9.0",
@@ -9,6 +10,7 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.0",
     "nodemon": "^3.1.10",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.0",
     "typescript": "^5.8.3"
@@ -16,12 +18,20 @@
   "name": "satim-payment-gateway-integration",
   "version": "1.0.0",
   "description": "SATIM Payment Gateway MCP Server",
-  "main": "satim-mcp-server.js",
+  "main": "dist/satim-mcp-server.js",
   "scripts": {
     "build": "tsc",
-    "start": "node satim-mcp-server.js",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "start": "node dist/satim-mcp-server.js",
     "dev": "tsx satim-mcp-server.ts",
-    "test": "ts-node test-client.ts"
+    "test:dev": "tsx test-client.ts",
+    "test": "npm run build && node dist/test-client.js",
+    "pretest": "npm run build"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   },
   "repository": {
     "type": "git",
