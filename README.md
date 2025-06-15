@@ -107,13 +107,10 @@ To use this server with an MCP client (like Claude Desktop), add to your configu
 ```json
 {
   "mcpServers": {
-    "satim-payment": {
-      "command": "node",
-      "args": [
-        "--experimental-strip-types",
-        "/path/to/your/satim-mcp-server.ts"
-      ],
-      "env": {
+      "satim-payment": {
+       "command": "npx",
+       "args": ["@devqxi/satim-payment-gateway-mcp"],
+       "env": {
         "SATIM_USERNAME": "your_test_username",
         "SATIM_PASSWORD": "your_test_password",
         "NODE_ENV": "development"
