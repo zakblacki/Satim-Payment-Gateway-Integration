@@ -29,6 +29,9 @@ npm run dev
 Launch index.html
 ```
 
+![image](https://github.com/user-attachments/assets/3a1951c0-081d-4893-bb5c-ec554ea08bc3)
+
+
 ## Table of Contents
 
 1. [Installation](#installation)
