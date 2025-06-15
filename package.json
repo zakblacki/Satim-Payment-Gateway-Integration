@@ -15,14 +15,23 @@
     "tsx": "^4.20.0",
     "typescript": "^5.8.3"
   },
-  "name": "satim-payment-gateway-integration",
+  "name": "@devqxi/satim-payment-gateway-mcp",
   "version": "1.0.0",
-  "description": "SATIM Payment Gateway MCP Server",
+  "description": "SATIM Payment Gateway MCP Server - Model Context Protocol server for SATIM payment processing",
   "main": "dist/satim-mcp-server.js",
+  "bin": {
+    "satim-mcp-server": "dist/satim-mcp-server.js"
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build",
     "start": "node dist/satim-mcp-server.js",
     "dev": "tsx satim-mcp-server.ts",
     "test:dev": "tsx test-client.ts",
@@ -37,11 +46,21 @@
     "type": "git",
     "url": "git+https://github.com/devqxi/Satim-Payment-Gateway-Integration.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "satim",
+    "payment-gateway",
+    "algeria",
+    "payment-processing"
+  ],
+  "author": "devqxi",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/devqxi/Satim-Payment-Gateway-Integration/issues"
   },
-  "homepage": "https://github.com/devqxi/Satim-Payment-Gateway-Integration#readme"
+  "homepage": "https://github.com/devqxi/Satim-Payment-Gateway-Integration#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
