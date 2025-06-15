@@ -1,6 +1,10 @@
 # Satim Payment Gateway Integration
 
-A Model Context Protocol (MCP) server for integrating with the SATIM payment gateway system in Algeria. The server provides a structured interface for processing CIB/Edhahabia card payments through the SATIM-ePAY platform. This package enables AI assistants like Cursor, Claude, and Copilot to directly access your Razorpay account data through a standardized interface.
+A Model Context Protocol (MCP) server for integrating with the SATIM payment gateway system in Algeria. The server provides a structured interface for processing CIB/Edhahabia card payments through the SATIM-ePAY platform. This package enables AI assistants like Cursor, Claude, and Copilot to directly access your account data through a standardized interface.
+
+<a href="https://glama.ai/mcp/servers/@zakblacki/Satim-Payment-Gateway-Integration">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@zakblacki/Satim-Payment-Gateway-Integration/badge" alt="Satim Payment Gateway Integration MCP server" />
+</a>
 
 More details : 
 https://code2tutorial.com/tutorial/6b3a062c-3a34-4716-830e-8793a5378bcc/index.md
@@ -18,11 +22,12 @@ npm install --save-dev typescript @types/node tsx
 
 # Run the server
 npx tsx satim-mcp-server.ts
+or
+npm run dev
 
 # Demo 
 Launch index.html
 ```
-
 
 ## Table of Contents
 
