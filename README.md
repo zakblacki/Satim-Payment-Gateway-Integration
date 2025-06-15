@@ -17,8 +17,7 @@ git clone https://github.com/zakblacki/Satim-Payment-Gateway-Integration.git
 cd satim-payment-gateway-integration
 
 # Install dependencies
-npm install @modelcontextprotocol/sdk axios
-npm install --save-dev typescript @types/node tsx
+npm install
 
 # Run the server
 npx tsx satim-mcp-server.ts
