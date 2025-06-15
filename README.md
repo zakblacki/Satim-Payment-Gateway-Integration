@@ -17,8 +17,7 @@ git clone https://github.com/zakblacki/Satim-Payment-Gateway-Integration.git
 cd satim-payment-gateway-integration
 
 # Install dependencies
-npm install @modelcontextprotocol/sdk axios
-npm install --save-dev typescript @types/node tsx
+npm install
 
 # Run the server
 npx tsx satim-mcp-server.ts
@@ -108,13 +107,10 @@ To use this server with an MCP client (like Claude Desktop), add to your configu
 ```json
 {
   "mcpServers": {
-    "satim-payment": {
-      "command": "node",
-      "args": [
-        "--experimental-strip-types",
-        "/path/to/your/satim-mcp-server.ts"
-      ],
-      "env": {
+      "satim-payment": {
+       "command": "npx",
+       "args": ["@devqxi/satim-payment-gateway-mcp"],
+       "env": {
         "SATIM_USERNAME": "your_test_username",
         "SATIM_PASSWORD": "your_test_password",
         "NODE_ENV": "development"
