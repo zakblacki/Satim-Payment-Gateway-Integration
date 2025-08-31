@@ -1,3 +1,5 @@
+# Obviously you should have already an account created and working to get credentials from here : https://cibweb.dz/fr/login
+
 # Satim Payment Gateway Integration
 
 A Model Context Protocol (MCP) server for integrating with the SATIM payment gateway system in Algeria. The server provides a structured interface for processing CIB/Edhahabia card payments through the SATIM-ePAY platform. This package enables AI assistants like Cursor, Claude, and Copilot to directly access your account data through a standardized interface.
