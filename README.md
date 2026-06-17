@@ -8,8 +8,6 @@ A Model Context Protocol (MCP) server for integrating with the SATIM payment gat
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@zakblacki/Satim-Payment-Gateway-Integration/badge" alt="Satim Payment Gateway Integration MCP server" />
 </a>
 
-More details : 
-https://code2tutorial.com/tutorial/6b3a062c-3a34-4716-830e-8793a5378bcc/index.md
 
 ## Quick Start
 
